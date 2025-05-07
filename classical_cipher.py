@@ -1,3 +1,7 @@
+from Crypto.Cipher import DES
+from Crypto.Util.Padding import pad, unpad
+import base64
+
 class ClassicalCipher:
     def __init__(self):
         pass
@@ -237,6 +241,31 @@ class ClassicalCipher:
             else:
                 plaintext += square[row_a][col_b] + square[row_b][col_a]
         return plaintext
+
+    def des_encrypt(self, plaintext, key):
+        """DES加密"""
+        try:
+            # DES密钥必须是8字节
+            if len(key) != 8:
+                raise ValueError("DES密钥必须是8字节")
+            cipher = DES.new(key.encode(), DES.MODE_ECB)
+            padded_plaintext = pad(plaintext.encode(), DES.block_size)
+            ciphertext = cipher.encrypt(padded_plaintext)
+            return base64.b64encode(ciphertext).decode()
+        except Exception as e:
+            raise ValueError(f"DES加密失败: {str(e)}")
+
+    def des_decrypt(self, ciphertext, key):
+        """DES解密"""
+        try:
+            # DES密钥必须是8字节
+            if len(key) != 8:
+                raise ValueError("DES密钥必须是8字节")
+            cipher = DES.new(key.encode(), DES.MODE_ECB)
+            decrypted_data = cipher.decrypt(base64.b64decode(ciphertext))
+            return unpad(decrypted_data, DES.block_size).decode()
+        except Exception as e:
+            raise ValueError(f"DES解密失败: {str(e)}")
 
 # 示例用法
 if __name__ == "__main__":
